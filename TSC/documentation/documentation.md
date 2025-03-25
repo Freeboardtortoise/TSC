@@ -29,3 +29,5 @@ TSC.client.init(server IP)
 TSC.client.send(message)
 
 
+## Plugins
+find the documentation for importing plugins in the folowing file /TSC/documentation/importing_plugins.md and /TSC/documentation/developin_/plugins.md
