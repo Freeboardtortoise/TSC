@@ -28,7 +28,7 @@ def init(ip):
 
 def get_clients():
     global sinit, connections
-    import client_function
+    import TSC.client_function as client_function
     import _thread
     s = sinit[0]
     sinit[1] += 1
@@ -72,5 +72,6 @@ def get_connections():
 def do_not_use():
     while True:
         get_clients()
+
 def get_clients_threaded():
     _thread.start_new_thread(do_not_use, ())
