@@ -69,6 +69,8 @@ def get_connections():
     global connections
     return connections
 
-
+def do_not_use():
+    while True:
+        get_clients()
 def get_clients_threaded():
-    _thread.start_new_thread(get_clients, ())
+    _thread.start_new_thread(do_not_use, ())
