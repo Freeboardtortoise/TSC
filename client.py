@@ -42,3 +42,7 @@ def init(ip):
 def send(message):
     global cinit
     return cinit[1].send(message)
+
+def get_cinit():
+    global cinit
+    return cinit
