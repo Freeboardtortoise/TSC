@@ -5,7 +5,7 @@ connections = []
 
 def init(ip):
     global sinit, connections
-    current_ID = 100000
+    IDs_used = [1]
     import socket
     print("Made with TSC")
     print("Darion Knighton-Fitt")
@@ -22,8 +22,7 @@ def init(ip):
 
     s.listen()
     print("waiting for connection")
-    sinit = [s, current_ID]
-    return [s, current_ID]
+    sinit = [s, IDs_used]
 
 
 def get_clients():
@@ -31,12 +30,18 @@ def get_clients():
     import TSC.client_function as client_function
     import _thread
     s = sinit[0]
-    sinit[1] += 1
+    IDs_used = sinit[1]
+    current_ID = 1
+    import random
+    while current_ID in IDs_used:
+        current_ID = random.randint(10000000, 999999999)
+
+    sinit[1] = sinit[1] + [current_ID]
     conn, addr = s.accept()
     print("\n new connection:" + str(addr))
     _thread.start_new_thread(
         client_function.client_threaded, (conn, addr, sinit[1]))
-    connections = connections + [[conn, addr, sinit[1]]]
+    connections = connections + [[conn, addr, current_ID]]
 
 
 def recieve(conn):
@@ -69,9 +74,11 @@ def get_connections():
     global connections
     return connections
 
+
 def do_not_use():
     while True:
         get_clients()
+
 
 def get_clients_threaded():
     _thread.start_new_thread(do_not_use, ())
