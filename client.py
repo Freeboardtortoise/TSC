@@ -24,7 +24,8 @@ class Network:
         except:
             print("error")
             return False
-
+    def recieve(self):
+        return self.client.recv(2048).decode()
 
 
 cinit = []
@@ -42,6 +43,10 @@ def init(ip):
 def send(message):
     global cinit
     return cinit[1].send(message)
+
+def recieve():
+    global cinit
+    return cinit[1].recieve()
 
 def get_cinit():
     global cinit
