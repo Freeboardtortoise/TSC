@@ -58,7 +58,7 @@ def _recieve():
             return data
 
 
-def recieve_threaded():
+def recieve_messages():
     global allwaysC, cinit
     import threading
     thread = threading.Thread(target=_recieve)
