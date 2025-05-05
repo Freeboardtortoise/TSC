@@ -1,1 +1,7 @@
 testing/
+TSC/
+__pycache__/
+.gitignore
+
+testing_server.py
+testing_client.py
