@@ -29,6 +29,30 @@ class Network:
     def recieve(self):
         return self.client.recv(2048).decode()
 
+def _recieve():
+    while True:
+        global cinit, allwaysC
+        data = cinit[1].recieve()
+        if allwaysC == True:
+            with open("TSC/plugins/server_files/messages.txt", "a") as file:
+                file.write(data + "\n")
+        else:
+            return data
+
+def _recieve_messages():
+    global allwaysC, cinit
+    import threading
+    thread = threading.Thread(target=_recieve)
+    thread.start()
+    return True
+
+def send(message):
+    global cinit
+    return cinit[1].send(message)
+
+def get_cinit():
+    global cinit
+    return cinit
 
 allwaysC = False
 cinit = []
@@ -40,35 +64,8 @@ def init(ip):
     n = Network(ip)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     cinit = (s, n)
-
-
-def send(message):
-    global cinit
-    return cinit[1].send(message)
-
-
-def _recieve():
-    while True:
-        global cinit, allwaysC
-        data = cinit[1].recieve()
-        if allwaysC == True:
-            with open("TSC/plugins/server_files/messages.txt", "a") as file:
-                file.write(data + "\n")
-        else:
-            return data
-
-
-def recieve_messages():
-    global allwaysC, cinit
-    import threading
-    thread = threading.Thread(target=_recieve)
-    thread.start()
-    return True
-
-
-def get_cinit():
-    global cinit
-    return cinit
+    open("TSC/plugins/server_files/messages.txt", "w").close()
+    recieve_messages()
 
 def get_message_latest():
     with open("TSC/plugins/server_files/messages.txt", "r") as file:
