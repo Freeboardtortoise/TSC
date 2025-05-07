@@ -65,7 +65,7 @@ def init(ip):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     cinit = (s, n)
     open("TSC/plugins/server_files/messages.txt", "w").close()
-    recieve_messages()
+    _recieve_messages()
 
 def get_message_latest():
     with open("TSC/plugins/server_files/messages.txt", "r") as file:
