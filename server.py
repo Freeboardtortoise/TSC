@@ -1,7 +1,20 @@
 import _thread
+import socket
+
+import TSC.pluginsManager as pm
+
 
 class Server:
-    def __init__(self, ip, port):
+    def __init__(self, port):
+        def get_local_ip():
+            import socket
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            try:
+                s.connect(("8.8.8.8", 80))
+                return s.getsockname()[0]
+            finally:
+                s.close()
+        ip = get_local_ip()
         self.connections = []
         self.sinit = []
         IDs_used = [1]
@@ -25,8 +38,7 @@ class Server:
         self.connections = self.connections
 
 
-    def get_clients(self):
-        import TSC.client_function as client_function
+    def get_clients(self, message_handeler):
         import _thread
 
         s = self.sinit[0]
@@ -39,10 +51,21 @@ class Server:
         self.sinit[1] = self.sinit[1] + [current_ID]
         conn, addr = s.accept()
         print("\n new connection:" + str(addr))
+        # Let plugins know someone connected
+        self.pm.new_client(conn, addr, sinit)
         _thread.start_new_thread(
-            client_function.client_threaded, (conn, addr, self.sinit[1]))
+            self.client_function_wrapper, (message_handeler,conn, addr, self.sinit[1]))
         self.connections = self.connections + [[conn, addr, current_ID]]
 
+    def client_function_wrapper(self, message_handeler, conn, addr, sinit):
+        data = server.recieve(conn)
+        reply = self.plugin_manager.handle_message(data, addr, sinit)
+        if reply['handled'] == True:
+            if reply["response_sent"] == True:
+                return False
+            else:
+                reply = message_handeler(data, addr, sinit)
+                send(conn,reply)
 
     def get_initc():
         global initc
@@ -53,13 +76,13 @@ class Server:
         return self.connections
 
 
-    def do_not_use(self):
+    def do_not_use(self, client_function):
         while True:
-            self.get_clients()
+            self.get_clients(client_function)
 
 
-    def get_clients_threaded(self):
-        _thread.start_new_thread(self.do_not_use, ())
+    def get_clients_threaded(self, client_function):
+        _thread.start_new_thread(self.do_not_use, (client_function,))
 
 def recieve(conn):
     try:

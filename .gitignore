@@ -2,6 +2,7 @@ testing/
 TSC/
 __pycache__/
 .gitignore
+plugins
 
 testing_server.py
 testing_client.py
