@@ -3,6 +3,9 @@ import socket
 
 import TSC.pluginsManager as pm
 
+def initialise_plugins():
+    global plugins
+    plugins = pm.ServerPluginManager()
 
 class Server:
     def __init__(self, port):
@@ -36,6 +39,7 @@ class Server:
         print("waiting for connection")
         self.sinit = [s, IDs_used]
         self.connections = self.connections
+        pm.on_server_start(ip, port, self.sinit, self.connections)
 
 
     def get_clients(self, message_handeler):
@@ -58,15 +62,16 @@ class Server:
         self.connections = self.connections + [[conn, addr, current_ID]]
 
     def client_function_wrapper(self, message_handeler, conn, addr, sinit):
-        data = server.recieve(conn)
-        reply = self.plugin_manager.handle_message(data, addr, sinit)
-        if reply['handled'] == True:
-            if reply["response_sent"] == True:
-                return False
-            else:
-                reply = message_handeler(data, addr, sinit)
-                send(conn,reply)
-
+        plugins.on_connection(ip, port, self.sinit, self.connections)
+        while True:
+            data = server.recieve(conn)
+            current = ''
+            handledMessage = False
+            reply = self.plugin_manager.on_message_recieve(self.ip, self.port, self.sinit, self.connections, data)
+            if reply['handled'] == True:
+                if handledMessage == False:
+                    reply = self.plugin_manager.on_message_send(self.ip, self.port, self.sinit, self.connections, reply)
+                    send(conn,reply)
     def get_initc():
         global initc
         return initc
