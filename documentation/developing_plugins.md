@@ -2,9 +2,36 @@
 
 ## making the plugin
 
-you must place the plugin file in the TSC/plugins directory and write your code there
-develop your plugin using the TSC.client and TSC.server base packages
-save your file and add the name into the /TSC/plugins/plugins.txt file
+### steps
+1. create the file... _place the file in TSC/plugins/filename.py_
+2. add in the plugin metadata:
+```python
+#plugin metadata
+name = "name of your plugin"
+pmv = "version of pmv that this plugin is made for"
+```
+3. import libraries
+```python
+
+import TSC.pluginsManager as pmv```
+3. create the base classes
+```python
+class ServerPlugin(pmv.ServerPlugin):
+  def __init__(self):
+    print("hello from your plugin")
+class ClientPlugin(pmv.ClientPlugin):
+  def __init__(self):
+    print("hello from the server plugin")
+```
+4. impliment your plugin
+use the following functions within the classes to develop your plugin
+client side plugin functions
+``` __init__(self)``
+``` on_connection(self, ip, port)```
+``` on_message_send(self, ip, port, message)``` then return ```{"handled": weather or not it has been handlea, "message": the handled messaged}```
+``` on_message_recieve(self, ip, port, message)``` then return ```{"handled": weather or not it has been handlea, "message": the handled messaged}```
+server side plugin functions
+``` on_server_start(self, ip, port, sinit, connections)```
 
 ## Applying to make it an oficial plugin
 

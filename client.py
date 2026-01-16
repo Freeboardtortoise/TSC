@@ -56,11 +56,11 @@ class Connection:
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.cinit = (s, n)
-        plugin.on_connection(ip, port)
+        plugin.on_connection(ip, port, 1)
 
     def send(self,message):
         data = plugin.on_message_send(self.ip, self.port, message)
-        return pluginsManager.on_message_recieve(self.ip, self.port, self.cinit[1].send(data))
+        return plugin.on_message_recieve(self.ip, self.port, self.cinit[1].send(data))
 
     def get_cinit(self):
         return self.cinit

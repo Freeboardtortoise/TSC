@@ -1,6 +1,8 @@
 import os
 import importlib.util
 
+import TSC.metadata as metadata
+
 def import_all_from_folder(folder_path: str):
     """
     Import all .py files from the given folder (ignores __init__.py and files starting with '_').
@@ -28,27 +30,25 @@ def import_all_from_folder(folder_path: str):
 
 class ClientPlugin:
     def __init__(self):
-        print("the plugin has not yet implimented this function yet")
+        pass
     def on_connection(self, ip, port):
-        print("the plugin has not yet implimented this function yet")
+        pass
     def on_message_send(self, ip, port, message):
-        print("the plugin has not yet implimented this function yet")
         return {"handled": False, "newMessage":None}
     def on_message_recieve(self, ip, port, message):
-        print("the plugin has not yet implimented this function yet")
         return {"handled": False, "newMessage":None}
 
 
 
 class ServerPlugin:
     def __init__(self):
-        print("the plugin has not yet implimented this function yet")
+        pass
     def on_server_start(self, ip, port, sinit, connections):
-        print("the plugin has not yet implimented this yet")
+        pass
     def on_connection(self, ip, port, sinit, connections):
-        print("the plugin has not yet implimented this yet")
+        pass
     def on_message_recieve(self, ip, port, sinit,connections, data):
-        return {"handled": False, "message": data}
+        return {"handled": False,"message": data}
     def on_message_send(self, ip, port, sinit, connections, data):
         return {"handled": False,"message": data}
     
@@ -88,20 +88,23 @@ class ServerPluginManager:
         modules = import_all_from_folder(pluginFolder)
         self.plugins = []
         for module in modules:
-            print(module)
-            self.plugins.append(module.ServerPlugin())
+            if module.pmv == metadata.version:
+                self.plugins.append(module.ServerPlugin())
+            else:
+                print("PLUGIN VERSION MISSMATCH")
     
     def on_server_start(self, ip, port, sinit, connections):
         for plugin in self.plugins:
-            plugin.on_server_start()
+            plugin.on_server_start( ip, port, sinit, connections)
 
     def on_connection(self, ip,port,sinit, connections):
         for plugin in self.plugins:
-            plugin.on_connection(ip, port)
+            plugin.on_connection(ip, port, sinit, connections)
+
     def on_message_send(self, ip, port,sinit,connections, message):
         thing_to_return = None
         for plugin in self.plugins:
-            thing = plugin.on_message_send(ip, port, sinit, connections message)
+            thing = plugin.on_message_send(ip, port, sinit, connections, message)
             if thing["handled"] == True:
                 if thing_to_return is not None:
                     thing_to_return = thing["mesage"]
@@ -109,10 +112,10 @@ class ServerPluginManager:
                 thing_to_return = thing
 
         return thing_to_return
-    def on_message_recieve(self, ip, port, message):
+    def on_message_recieve(self, ip, port,sinit, connections, message):
         thing_to_return = None
         for plugin in self.plugins:
-            thing = plugin.on_message_recieve(ip, port, message)
+            thing = plugin.on_message_recieve(ip, port,sinit, connections, message)
             if thing["handled"] == True:
                 if thing_to_return is not None:
                     thing_to_return = thing["mesage"]
